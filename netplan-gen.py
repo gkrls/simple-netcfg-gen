@@ -40,7 +40,7 @@ def generate_netplan(rank, ifaces):
         res += "    %s:\n" % iface
         res += "      dhcp4: no\n"
         res += "      addresses:\n"
-        res += "        - 10.10.%d.%d\n" % (rank, i)
+        res += "        - 10.10.%d.%d/16\n" % (rank, i)
     print(res)
 
 def get_ifs(ifs):
