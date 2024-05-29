@@ -26,7 +26,7 @@ ifgroup = parser.add_mutually_exclusive_group(required=True)
 ifgroup.add_argument("-i", action='store', type=str, nargs='+', help="Configure the specified list of interfaces")
 ifgroup.add_argument("-iprefix", action='store', type=str, help="Configure all interfaces starting with given prefix")
 
-def generate_netplan(rank, ifaces):
+def generate_netplan(rank, jumbo_frames, ifaces):
     if len(ifaces) == 0:
         print("error: did not find any interfaces")
         sys.exit(1)
@@ -41,7 +41,9 @@ def generate_netplan(rank, ifaces):
         res += "      dhcp4: no\n"
         res += "      addresses:\n"
         res += "        - 10.10.%d.%d/16\n" % (rank, i)
-    print(res)
+        if jumbo_frames:
+            res += "      mtu: 9000\n"    
+    return res
 
 def get_ifs(ifs):
     res = set()
@@ -66,4 +68,4 @@ def get_ifs_with_prefix(prefix):
 if __name__ == "__main__":
     opts = parser.parse_args()
     ifs = get_ifs(opts.i) if opts.i is not None else get_ifs_with_prefix(opts.iprefix)
-    generate_netplan(opts.rank, ifs)
+    print(generate_netplan(opts.rank, opts.jumbo_frames, ifs))
