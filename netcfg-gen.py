@@ -3,13 +3,13 @@ from argparse import RawTextHelpFormatter
 import sys
 import socket
 
-desc = """This script generates dumb netplan configurations.
+desc = """This script generates dumb net configurations.
 
-For a given server rank, and a list of interfaces, it will bind
-10.10.RANK.i to each interface i. For instance, on server rank 1:
-    ens5f0 <- 10.10.1.0
-    ens5f1 <- 10.10.1.1
-    ens5f2 <- 10.10.1.2
+For a given server rank, and a list of interfaces, it will bind address
+10.10.INTERFACE.RANK to each interface i. For instance, on server rank 1:
+    ens5f0 <- 10.0.0.1
+    ens5f1 <- 10.0.1.1
+    ens5f2 <- 10.0.2.1
 """
 
 parser = argparse.ArgumentParser(
@@ -40,7 +40,7 @@ def generate_netplan(rank, jumbo_frames, ifaces):
         res += "    %s:\n" % iface
         res += "      dhcp4: no\n"
         res += "      addresses:\n"
-        res += "        - 10.10.%d.%d/16\n" % (rank, i)
+        res += "        - 10.10.%d.%d/24\n" % (i, rank)
         if jumbo_frames:
             res += "      mtu: 9000\n"
     return res
@@ -49,7 +49,7 @@ def generate_netplan(rank, jumbo_frames, ifaces):
 def generate_sh(rank, jumbo_frames, ifaces):
     res = ""
     for i, iface in enumerate(sorted(ifaces)):
-        res += "sudo ip addr add 10.10.%d.%d/16 dev %s\n" % (rank, i, iface)
+        res += "sudo ip addr add 10.10.%d.%d/24 dev %s\n" % (i, rank, iface)
         res += "sudo ip link set %s up\n" % iface
     return res
 
@@ -59,8 +59,8 @@ def generate_config(rank, jumbo_frames, ifaces):
     for i, iface in enumerate(sorted(ifaces)):
         res += "auto %s\n" % iface
         res += "iface %s inet static\n" % iface
-        res += "    address 10.10.%d.%d\n" % (rank, i)
-        res += "    netmask 255.255.0.0\n"
+        res += "    address 10.10.%d.%d\n" % (i, rank)
+        res += "    netmask 255.255.255.0\n"
     return res
 
 
