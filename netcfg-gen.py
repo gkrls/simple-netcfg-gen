@@ -40,7 +40,7 @@ def generate_netplan(rank, jumbo_frames, ifaces):
         res += "    %s:\n" % iface
         res += "      dhcp4: no\n"
         res += "      addresses:\n"
-        res += "        - 10.10.%d.%d/24\n" % (i, rank)
+        res += "        - 10.0.%d.%d/24\n" % (i, rank)
         if jumbo_frames:
             res += "      mtu: 9000\n"
     return res
@@ -59,7 +59,7 @@ def generate_config(rank, jumbo_frames, ifaces):
     for i, iface in enumerate(sorted(ifaces)):
         res += "auto %s\n" % iface
         res += "iface %s inet static\n" % iface
-        res += "    address 10.10.%d.%d\n" % (i, rank)
+        res += "    address 10.0.%d.%d\n" % (i, rank)
         res += "    netmask 255.255.255.0\n"
     return res
 
