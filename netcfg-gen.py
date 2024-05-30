@@ -49,7 +49,7 @@ def generate_netplan(rank, jumbo_frames, ifaces):
 def generate_sh(rank, jumbo_frames, ifaces):
     res = ""
     for i, iface in enumerate(sorted(ifaces)):
-        res += "sudo ip addr add 10.10.%d.%d/24 dev %s\n" % (i, rank, iface)
+        res += "sudo ip addr add 10.0.%d.%d/24 dev %s\n" % (i, rank, iface)
         res += "sudo ip link set %s up\n" % iface
     return res
 
